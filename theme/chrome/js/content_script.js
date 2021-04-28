@@ -3,7 +3,8 @@ let href
 let host
 
 let relation_map = {
-    "v.qq.com":vqq
+    "v.qq.com":vqq,
+    "www.bilibili.com":bilibili
 };
 
 let info = {
@@ -30,6 +31,20 @@ function getUrl (){
     }
 }
 
+function buildButton(){
+    $("body").append("<div style='z-index: 10000000;border: none;width: 100px;height: 50px;position: fixed;left: 1px;top: 100px'><button id='johns' style='cursor: pointer;\n" +
+        "    position: relative;\n" +
+        "    color: #fff;\n" +
+        "    font-size: 14px;\n" +
+        "    display: block;\n" +
+        "    width: 50px;\n" +
+        "    height: 40px;\n" +
+        "    line-height: 36px;\n" +
+        "    text-align: center;\n" +
+        "    background: #fbc4c4;\n" +
+        "    border-radius: 4px;border: none\n'>追剧</button></div>")
+}
+
 function vqq(){
     let regex = /x\/cover\/[\w\/]+\.html/
 
@@ -39,6 +54,19 @@ function vqq(){
 
         $(document).on('click','#johns',function (){
             followQqVideo();
+        })
+    }
+}
+
+function bilibili(){
+    let regex = /\/bangumi\/play\/\w+/
+
+    if(regex.test(href)){
+        //添加元素标签 按钮
+        buildButton()
+
+        $(document).on('click','#johns',function (){
+            followBiliVideo();
         })
     }
 }
@@ -59,6 +87,26 @@ function followQqVideo(){
     }
 
     console.log(info)
+    sendBackgroud(info)
+}
+
+function followBiliVideo(){
+    //匹配通过，是bilibili播放页面
+    info.href = href
+    info.title = $(".media-right>.media-title").attr('title')
+    info.detail = 'https:'+$(".media-right>.media-title").attr('href')
+    info.desc = $("span.absolute").text()
+    info.images = 'https:'+$("#media_module").find('img').attr("src")
+    info.lastNew = $('.ep-list-progress').text()
+
+    info.type = $(".pub-wrapper").find('a:first').text()
+
+    if(info.lastNew){
+       info.lastNew =  info.lastNew.split('/')[1]
+    }else{
+        info.lastNew = 0;
+    }
+
     sendBackgroud(info)
 }
 

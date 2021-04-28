@@ -1,9 +1,11 @@
 let relation_map = {
-	"v.qq.com":vqq
+	"v.qq.com":vqq,
+	"www.bilibili.com":bilibili,
 };
 
 let update_relation_map = {
-	"v.qq.com":vqqUpdate
+	"v.qq.com":vqqUpdate,
+	"www.bilibili.com":bilibiliUpdate,
 };
 
 let notification_url = {}
@@ -22,6 +24,15 @@ async function vqq(info){
 
 	info.desc = dom.querySelector("span[class='txt _desc_txt_lineHight']").textContent
 
+	return info;
+}
+
+/**
+ * bilibili 订阅资料补全
+ * @param info
+ * @returns {Promise<*>}
+ */
+async function bilibili(info){
 	return info;
 }
 
@@ -120,6 +131,39 @@ async function vqqUpdate(info){
 	}
 
 	if(lastNew && lastNew!==info.lastNew){
+		//有更新
+		info.lastNew = lastNew
+
+		chrome.storage.sync.set({[info.detail]:info})
+
+		let id = alertNotify(info.desc,info.title+' 第'+lastNew+'(集/期)已更新',info.images,true,[{title:'立刻查看'},{title:'取消'}],10000)
+
+		notification_url[id] = info.href;
+	}
+}
+
+/**
+ * bilibili 资源检查更新
+ * @param info
+ * @returns {Promise<void>}
+ */
+async function bilibiliUpdate(info){
+	let html = await getHtml(info.href)
+
+	let dom = new DOMParser().parseFromString(html,'text/html')
+
+	let lastNew = $(dom).find("ul[class='clearfix']>li.ep-item").length
+
+	let json = html.match(/(__INITIAL_STATE__={.+})/)[0].split('__INITIAL_STATE__=')[1]
+	return
+
+	if(lastNew){
+		lastNew =  lastNew.split('/')[1]
+	}else{
+		lastNew = 0;
+	}
+
+	if(lastNew && lastNew===info.lastNew){
 		//有更新
 		info.lastNew = lastNew
 

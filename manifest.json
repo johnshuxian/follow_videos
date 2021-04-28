@@ -9,15 +9,15 @@
          "19": "ext_icons/icon_19_1.png",
          "38": "ext_icons/icon_38_1.png"
       },
-      "default_title": "follow videos"
+      "default_popup": "config.html",
+      "default_title": "追剧助手"
    },
    "content_scripts": [ {
       "js": [
          "theme/chrome/js/jquery.js",
-         "theme/chrome/js/reconnecting-websocket.js",
          "theme/chrome/js/content_script.js"
       ],
-      "matches": ["https://v.qq.com/*"],
+      "matches": ["https://v.qq.com/*","https://www.bilibili.com/*"],
       "run_at": "document_end"
    } ],
    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
@@ -28,9 +28,9 @@
       "48": "ext_icons/icon_48_1.png"
    },
    "manifest_version": 2,
-   "name": "follow videos",
+   "name": "追剧助手",
    "options_page": "config.html",
-   "permissions": [ "activeTab", "background", "tabs", "contextMenus", "unlimitedStorage", "storage", "notifications", "cookies", "*://*/*", "<all_urls>", "http://*/", "https://*/", "management" ],
+   "permissions": [ "activeTab", "background", "tabs", "contextMenus", "unlimitedStorage", "storage", "notifications","alarms", "cookies", "*://*/*", "<all_urls>", "http://*/", "https://*/", "management" ],
    "version": "1.0.0",
    "web_accessible_resources": [ "*" ]
 }

@@ -24,7 +24,7 @@ $(function(){
     var Main = {
         created() {
             let that = this
-            console.log(this)
+
              getData().then(function (v){
                  console.log(v.tableData)
                  that.tableData = v.tableData
@@ -42,14 +42,29 @@ $(function(){
             openUrl(url){
                 window.open(url)
             },
-            del(row){
+            del(detail){
+                let that = this
                 chrome.storage.sync.get(['video_list_keys'],function (item){
                     let list = item.video_list_keys
 
                     if(list){
-                        list.remove(row.detail)
-                        chrome.storage.sync.set({video_list_keys:list})
+                        let temp_list = [];
+
+                       for (let i = 0;i<list.length;i++){
+                        if(detail !== list[i]){
+                            temp_list.push(list[i])
+                        }else{
+                            chrome.storage.sync.remove([detail])
+                        }
+
+                       }
+
+                        chrome.storage.sync.set({video_list_keys:temp_list})
                     }
+
+                    getData().then(function (v){
+                        that.tableData = v.tableData
+                    })
                 })
             }
         },

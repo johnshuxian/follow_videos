@@ -9,7 +9,7 @@ let relation_map = {
 let info = {
     href:'',
     title:'',
-    num:'',
+    lastNew:'',
     images:'',
     desc:"",
     detail:'',
@@ -48,38 +48,22 @@ function followQqVideo(){
     info.href = href
     info.title = $(".player_title").children('a').text()
     info.detail = 'https://'+host+$(".player_title").children('a').attr('href')
-    info.num = $("span[class='item current']").find("a").text();
     info.desc = '';
     info.images = '';
+    info.lastNew = $(".episode_header").find('.item:last').text()
+
     info.type = $(".site_channel").find(".current").attr('data-key')
 
-    if(!info.num){
-        info.desc   = $("li[class='list_item current']").find(".figure").attr("title")
-        info.num    = $("li[class='list_item current']").find(".figure_count>.num").eq(0).text()
-        info.images = 'https:'+$("li[class='list_item current']").find(".figure_pic").attr("src");
-    }else{
-        info.num = info.num.replace(/[\n\s]/g,"")
+    if(!info.lastNew){
+       info.lastNew =  $(".mod_column ul[class='figure_list']").children('.list_item').length
     }
 
+    console.log(info)
     sendBackgroud(info)
 }
 
 function sendBackgroud(info){
     chrome.runtime.sendMessage({from:"content_js",data:info}, function(response) {});
 }
-
-
-
-window.addEventListener("message", function (event) {
-
-    if (event.source !== window) return;
-
-    if (event.data.type && (event.data.type == "FROM_PAGE")) {
-        if(!port) port = chrome.runtime.connect({name:"websocket"});
-
-        port.onMessage.addListener(function (data) {
-        });
-    }
-}, false);
 
 getUrl();

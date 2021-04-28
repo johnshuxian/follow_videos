@@ -11,6 +11,22 @@ let update_relation_map = {
 let notification_url = {}
 
 /**
+ * 获取指定键值的缓存
+ * @param key
+ * @returns {Promise<unknown>}
+ */
+async function getKey(key){
+	return new Promise((resolve, reject) => {
+		// Asynchronously fetch all data from storage.sync.
+		chrome.storage.sync.get([key], (items) => {
+			// Pass any observed errors down the promise chain.
+			// Pass the data retrieved from storage down the promise chain.
+			resolve(items);
+		});
+	});
+}
+
+/**
  * 腾讯视频 订阅资料补全
  * @param info
  * @returns {Promise<*>}
@@ -105,11 +121,19 @@ function getHtml(url){
 chrome.runtime.onMessage.addListener(
 	async function(request, sender, sendResponse) {
 		if(request.from === 'content_js'){
-			let info = request.data;
+			switch (request.action) {
+				case "follow":
+					let info = request.data;
 
-			info = await relation_map[info.station](info)
+					info = await relation_map[info.station](info)
 
-			listStorage(info)
+					listStorage(info)
+					break
+				case "check":
+					break
+			}
+
+
 		}
 	}
 );
@@ -154,16 +178,20 @@ async function bilibiliUpdate(info){
 
 	let lastNew = $(dom).find("ul[class='clearfix']>li.ep-item").length
 
-	let json = html.match(/(__INITIAL_STATE__={.+})/)[0].split('__INITIAL_STATE__=')[1]
-	return
+	// let json = html.match(/(__INITIAL_STATE__={.+})/)[0].split('__INITIAL_STATE__=')[1]
+	let json = html.match(/(?<=__INITIAL_STATE__=).*(?=;\(function\(\))/)
 
-	if(lastNew){
-		lastNew =  lastNew.split('/')[1]
+	json = json[0]
+
+	if(json){
+		json = JSON.parse(json)
+
+		lastNew = json.epList.length.toString()
 	}else{
-		lastNew = 0;
+		lastNew = 0
 	}
 
-	if(lastNew && lastNew===info.lastNew){
+	if(lastNew && lastNew!==info.lastNew){
 		//有更新
 		info.lastNew = lastNew
 
@@ -186,7 +214,7 @@ async function bilibiliUpdate(info){
  * @param clear_time
  */
 function alertNotify(messages,titles,image,consistent,buttons = [],clear_time=5000) {
-	let id = Date.parse(new Date()).toString();
+	let id = Date.now().toString();
 
 	let opt = {
 		type: "basic",

@@ -31,18 +31,40 @@ function getUrl (){
     }
 }
 
-function buildButton(){
-    $("body").append("<div style='z-index: 10000000;border: none;width: 100px;height: 50px;position: fixed;left: 1px;top: 100px'><button id='johns' style='cursor: pointer;\n" +
-        "    position: relative;\n" +
-        "    color: #fff;\n" +
-        "    font-size: 14px;\n" +
-        "    display: block;\n" +
-        "    width: 50px;\n" +
-        "    height: 40px;\n" +
-        "    line-height: 36px;\n" +
-        "    text-align: center;\n" +
-        "    background: #fbc4c4;\n" +
-        "    border-radius: 4px;border: none\n'>追剧</button></div>")
+function buildButton(detail){
+
+    // chrome.runtime.sendMessage({from:"content_js",action:"check",data:detail}, function(response) {
+    //     response.then(function (res){
+    //         console.log(res)
+    //     })
+    // });
+
+    chrome.storage.sync.get([detail], (items) => {
+        // Pass any observed errors down the promise chain.
+        // Pass the data retrieved from storage down the promise chain.
+        let info = items[detail]
+        let str = '追剧'
+
+        if(info){
+            str = '已追'
+
+            info.href = href
+
+            chrome.storage.sync.set({[detail]:info})
+        }
+
+        $("body").append("<div style='z-index: 10000000;border: none;width: 100px;height: 50px;position: fixed;right: 1px;top: 100px'><button id='johns' style='cursor: pointer;\n" +
+            "    position: relative;\n" +
+            "    color: #fff;\n" +
+            "    font-size: 14px;\n" +
+            "    display: block;\n" +
+            "    width: 50px;\n" +
+            "    height: 40px;\n" +
+            "    line-height: 36px;\n" +
+            "    text-align: center;\n" +
+            "    background: #fbc4c4;\n" +
+            "    border-radius: 4px;border: none\n'>"+str+"</button></div>")
+    });
 }
 
 function vqq(){
@@ -50,7 +72,8 @@ function vqq(){
 
     if(regex.test(href)){
         //添加元素标签 按钮
-        $(".video_base,._base").prepend("<button _stat='intro:tag' target='_blank' id='johns' class='tag_item'>一键追剧</button>")
+        // $(".video_base,._base").prepend("<button _stat='intro:tag' target='_blank' id='johns' class='tag_item'>一键追剧</button>")
+        buildButton('https://'+host+$(".player_title").children('a').attr('href'))
 
         $(document).on('click','#johns',function (){
             followQqVideo();
@@ -63,7 +86,7 @@ function bilibili(){
 
     if(regex.test(href)){
         //添加元素标签 按钮
-        buildButton()
+        buildButton('https:'+$(".media-right>.media-title").attr('href'))
 
         $(document).on('click','#johns',function (){
             followBiliVideo();
@@ -86,7 +109,6 @@ function followQqVideo(){
        info.lastNew =  $(".mod_column ul[class='figure_list']").children('.list_item').length
     }
 
-    console.log(info)
     sendBackgroud(info)
 }
 
@@ -111,7 +133,8 @@ function followBiliVideo(){
 }
 
 function sendBackgroud(info){
-    chrome.runtime.sendMessage({from:"content_js",data:info}, function(response) {});
+    chrome.runtime.sendMessage({from:"content_js",action: "follow",data:info}, function(response) {});
+    $("#johns").text('已追')
 }
 
 getUrl();

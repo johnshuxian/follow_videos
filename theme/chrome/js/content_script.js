@@ -43,10 +43,12 @@ function buildButton(detail){
         // Pass any observed errors down the promise chain.
         // Pass the data retrieved from storage down the promise chain.
         let info = items[detail]
-        let str = '追剧'
+        let str = '一键追剧'
+
+        $("#johns").parent().remove()
 
         if(info){
-            str = '已追'
+            str = '取消追剧'
 
             info.href = href
 
@@ -58,7 +60,7 @@ function buildButton(detail){
             "    color: #fff;\n" +
             "    font-size: 14px;\n" +
             "    display: block;\n" +
-            "    width: 50px;\n" +
+            "    width: 70px;\n" +
             "    height: 40px;\n" +
             "    line-height: 36px;\n" +
             "    text-align: center;\n" +
@@ -76,9 +78,15 @@ function vqq(){
         buildButton('https://'+host+$(".player_title").children('a').attr('href'))
 
         $(document).on('click','#johns',function (){
+            clickAble(false)
             followQqVideo();
         })
     }
+}
+
+//防止重复点击
+function clickAble(bool = true){
+    $("#johns").attr("clickable",bool)
 }
 
 function bilibili(){
@@ -89,6 +97,7 @@ function bilibili(){
         buildButton('https:'+$(".media-right>.media-title").attr('href'))
 
         $(document).on('click','#johns',function (){
+            clickAble(false)
             followBiliVideo();
         })
     }
@@ -134,7 +143,11 @@ function followBiliVideo(){
 
 function sendBackgroud(info){
     chrome.runtime.sendMessage({from:"content_js",action: "follow",data:info}, function(response) {});
-    $("#johns").text('已追')
+
+    setTimeout(function (){
+        buildButton(info.detail)
+        clickAble(true)
+    },1000)
 }
 
 getUrl();

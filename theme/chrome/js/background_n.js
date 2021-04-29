@@ -49,6 +49,27 @@ async function vqq(info){
  * @returns {Promise<*>}
  */
 async function bilibili(info){
+	let html = await getHtml(info.href)
+	let lastNew = 0
+	// let json = html.match(/(__INITIAL_STATE__={.+})/)[0].split('__INITIAL_STATE__=')[1]
+	let json = html.match(/(?<=__INITIAL_STATE__=).*(?=;\(function\(\))/)
+
+	json = json[0]
+
+	if(json){
+		json = JSON.parse(json)
+
+		lastNew = json.epList.length
+
+		for (let i=0;i<json.epList.length;i++){
+			if(json.epList[i].badgeType === 1){
+				lastNew--;
+			}
+		}
+	}
+
+	info.lastNew = lastNew
+
 	return info;
 }
 
@@ -62,23 +83,52 @@ function listStorage(info)
 
 		let list = res.video_list_keys
 
+		let add = true
+
 		if(list){
 			if(!list.some((v)=>v=== info.detail)){
 				list.push(info.detail)
 				chrome.storage.sync.set({video_list_keys:list},function (){
 					alertNotify(info.desc,info.title+' 追剧成功',info.images,true)
 				});
+			}else{
+				//取消追剧
+				add = false
+				chrome.storage.sync.get(['video_list_keys'],function (item){
+					let list = item.video_list_keys
+
+					if(list){
+						let temp_list = [];
+
+						let rem = [];
+
+						for (let i = 0;i<list.length;i++){
+							if(info.detail !== list[i]){
+								temp_list.push(list[i])
+							}else{
+								rem.push(info.detail)
+							}
+
+						}
+
+						chrome.storage.sync.remove(rem,function () {
+							chrome.storage.sync.set({video_list_keys:temp_list})
+						})
+					}
+				})
 			}
 		}else{
 			chrome.storage.sync.set({video_list_keys:[info.detail]},function (){
 				alertNotify(info.desc,info.title+' 追剧成功',info.images,true)
 			});
 		}
+
+		if(add){
+			let detail = info.detail
+
+			chrome.storage.sync.set({[detail]:info})
+		}
 	});
-
-	let detail = info.detail
-
-	chrome.storage.sync.set({[detail]:info})
 }
 
 /**
@@ -91,10 +141,10 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
 				console.log(res)
 			})
 		}
-		// console.log(
-		// 	`Storage key "${key}" in namespace "${namespace}" changed.`,
-		// 	`Old value was "${oldValue}", new value is "${newValue}".`
-		// );
+		console.log(
+			`Storage key "${key}" in namespace "${namespace}" changed.`,
+			`Old value was "${oldValue}", new value is "${newValue}".`
+		);
 	}
 });
 
@@ -173,11 +223,7 @@ async function vqqUpdate(info){
  */
 async function bilibiliUpdate(info){
 	let html = await getHtml(info.href)
-
-	let dom = new DOMParser().parseFromString(html,'text/html')
-
-	let lastNew = $(dom).find("ul[class='clearfix']>li.ep-item").length
-
+	let lastNew = 0
 	// let json = html.match(/(__INITIAL_STATE__={.+})/)[0].split('__INITIAL_STATE__=')[1]
 	let json = html.match(/(?<=__INITIAL_STATE__=).*(?=;\(function\(\))/)
 
@@ -186,9 +232,13 @@ async function bilibiliUpdate(info){
 	if(json){
 		json = JSON.parse(json)
 
-		lastNew = json.epList.length.toString()
-	}else{
-		lastNew = 0
+		lastNew = json.epList.length
+
+		for (let i=0;i<json.epList.length;i++){
+			if(json.epList[i].badgeType === 1){
+				lastNew--;
+			}
+		}
 	}
 
 	if(lastNew && lastNew!==info.lastNew){

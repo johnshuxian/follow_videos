@@ -21,7 +21,7 @@
       "run_at": "document_idle"
    } ],
    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-   "description": "拿来追剧岂不快哉",
+   "description": "拿来追剧岂不快哉(支持腾讯视频、爱奇艺、bilibili)",
    "icons": {
       "128": "ext_icons/icon_128_1.png",
       "16": "ext_icons/icon_16_1.png",
@@ -31,6 +31,6 @@
    "name": "追剧助手",
    "options_page": "config.html",
    "permissions": [ "activeTab", "background", "tabs", "contextMenus", "unlimitedStorage", "storage", "notifications","alarms", "cookies", "*://*/*", "<all_urls>", "http://*/", "https://*/", "management" ],
-   "version": "1.0.0",
+   "version": "1.0.1",
    "web_accessible_resources": [ "*" ]
 }

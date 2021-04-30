@@ -145,6 +145,8 @@ function followQqVideo(){
        info.lastNew =  $(".mod_column ul[class='figure_list']").children('.list_item').length
     }
 
+    info.lastNew = info.lastNew.toString()
+
     sendBackgroud(info)
 }
 
@@ -164,6 +166,8 @@ function followBiliVideo(){
     }else{
         info.lastNew = 0;
     }
+
+    info.lastNew = info.lastNew.toString()
 
     sendBackgroud(info)
 }
@@ -198,12 +202,15 @@ function followIqiyi(){
 }
 
 function sendBackgroud(info){
+    if(info.lastNew === '0'){
+        info.lastNew = '1'
+    }
     chrome.runtime.sendMessage({from:"content_js",action: "follow",data:info}, function(response) {});
 
     setTimeout(function (){
         buildButton(info.detail)
         clickAble(true)
-    },2000)
+    },1000)
 }
 
 getUrl();

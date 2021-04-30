@@ -70,7 +70,7 @@ async function bilibili(info){
 		}
 	}
 
-	info.lastNew = lastNew
+	info.lastNew = lastNew.toString()
 
 	return info;
 }
@@ -215,13 +215,19 @@ async function vqqUpdate(info){
 		lastNew =  $(dom).find(".mod_column ul[class='figure_list']").children('.list_item').length
 	}
 
+	lastNew = lastNew.toString()
+
+	if(lastNew === '0'){
+		lastNew = '1'
+	}
+
 	if(lastNew && lastNew!==info.lastNew){
 		//有更新
 		info.lastNew = lastNew
 
 		chrome.storage.sync.set({[info.detail]:info})
 
-		let id = alertNotify(info.desc,info.title+' 第'+lastNew+'(集/期)已更新',info.images,true,[{title:'立刻查看'},{title:'取消'}],30000)
+		let id = alertNotify(info.desc,info.title+' 第'+lastNew+'(集/期)已更新',info.images,true,[{title:'立刻查看'},{title:'取消'}],0)
 
 		notification_url[id] = info.href;
 	}
@@ -252,13 +258,19 @@ async function bilibiliUpdate(info){
 		}
 	}
 
+	lastNew = lastNew.toString()
+
+	if(lastNew === '0'){
+		lastNew = '1'
+	}
+
 	if(lastNew && lastNew!==info.lastNew){
 		//有更新
 		info.lastNew = lastNew
 
 		chrome.storage.sync.set({[info.detail]:info})
 
-		let id = alertNotify(info.desc,info.title+' 第'+lastNew+'(集/期)已更新',info.images,true,[{title:'立刻查看'},{title:'取消'}],10000)
+		let id = alertNotify(info.desc,info.title+' 第'+lastNew+'(集/期)已更新',info.images,true,[{title:'立刻查看'},{title:'取消'}],0)
 
 		notification_url[id] = info.href;
 	}
@@ -280,13 +292,17 @@ async function iqiyiUpdate(info){
 
 	lastNew = lastNew.toString()
 
+	if(lastNew === '0'){
+		lastNew = '1'
+	}
+
 	if(lastNew && lastNew!==info.lastNew){
 		//有更新
 		info.lastNew = lastNew
 
 		chrome.storage.sync.set({[info.detail]:info})
 
-		let id = alertNotify(info.desc,info.title+' 第'+lastNew+'(集/期)已更新',info.images,true,[{title:'立刻查看'},{title:'取消'}],10000)
+		let id = alertNotify(info.desc,info.title+' 第'+lastNew+'(集/期)已更新',info.images,true,[{title:'立刻查看'},{title:'取消'}],0)
 
 		notification_url[id] = info.href;
 	}
@@ -323,10 +339,12 @@ function alertNotify(messages,titles,image,consistent,buttons = [],clear_time=50
 
 	chrome.notifications.create(id,opt,function () {});
 
-	setTimeout(function(){
-		chrome.notifications.clear(id);
-		delete notification_url[id]
-	}, clear_time);
+	if(clear_time){
+		setTimeout(function(){
+			chrome.notifications.clear(id);
+			delete notification_url[id]
+		}, clear_time);
+	}
 
 	return id
 }

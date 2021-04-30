@@ -221,7 +221,7 @@ async function vqqUpdate(info){
 
 		chrome.storage.sync.set({[info.detail]:info})
 
-		let id = alertNotify(info.desc,info.title+' 第'+lastNew+'(集/期)已更新',info.images,true,[{title:'立刻查看'},{title:'取消'}],10000)
+		let id = alertNotify(info.desc,info.title+' 第'+lastNew+'(集/期)已更新',info.images,true,[{title:'立刻查看'},{title:'取消'}],30000)
 
 		notification_url[id] = info.href;
 	}
@@ -313,7 +313,7 @@ function alertNotify(messages,titles,image,consistent,buttons = [],clear_time=50
 		// iconUrl: "img/logo.png",
 		iconUrl: image,
 		requireInteraction:consistent,
-		priority: 1,
+		// priority: 1,
 		isClickable: false
 	}
 

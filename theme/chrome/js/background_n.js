@@ -212,7 +212,7 @@ async function vqqUpdate(info){
 	let lastNew = $(dom).find(".episode_header").find('.item:last').text()
 
 	if(!lastNew){
-		lastNew =  $(dom).find(".mod_column ul[class='figure_list']").children('.list_item').length
+		lastNew =  $(dom).find("ul.figure_list:first").children('.list_item').length
 	}
 
 	lastNew = lastNew.toString()

@@ -142,7 +142,7 @@ function followQqVideo(){
     info.type = $(".site_channel").find(".current").attr('data-key')
 
     if(!info.lastNew){
-       info.lastNew =  $(".mod_column ul[class='figure_list']").children('.list_item').length
+       info.lastNew =  $("ul.figure_list:first").children('.list_item').length
     }
 
     info.lastNew = info.lastNew.toString()

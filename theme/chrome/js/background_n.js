@@ -282,7 +282,7 @@ async function iqiyiUpdate(info){
 
 	let dom = new DOMParser().parseFromString(html,'text/html')
 
-	lastNew = $(dom).find(".update-tip").text().match(/(?<=更新至)\d+(?=集\/)/)
+	lastNew = $(dom).find(".update-tip").text().match(/((?<=更新至)\d+(?=集\/)|\d+(?=集全))/)
 
 	if(!lastNew){
 		lastNew = $(dom).find('div.side-content>div:first').find("ul.qy-play-list").children("li.play-list-item").length

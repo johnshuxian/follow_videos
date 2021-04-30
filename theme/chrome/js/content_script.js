@@ -186,7 +186,7 @@ function followIqiyi(){
 
     info.desc = $(".content-paragraph").text();
     info.images = 'https:'+($('.intro-img').attr('src')?$('.intro-img').attr('src'):iqiyi_json.imageUrl)
-    info.lastNew = $(".update-tip").text().match(/(?<=更新至)\d+(?=集\/)/)
+    info.lastNew = $(".update-tip").text().match(/((?<=更新至)\d+(?=集\/)|\d+(?=集全))/)
 
     info.type = iqiyi_json.categoryName
 

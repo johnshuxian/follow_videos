@@ -1,11 +1,13 @@
 let relation_map = {
 	"v.qq.com":vqq,
 	"www.bilibili.com":bilibili,
+	"www.iqiyi.com":iqiyi,
 };
 
 let update_relation_map = {
 	"v.qq.com":vqqUpdate,
 	"www.bilibili.com":bilibiliUpdate,
+	"www.iqiyi.com":iqiyiUpdate,
 };
 
 let notification_url = {}
@@ -71,6 +73,15 @@ async function bilibili(info){
 	info.lastNew = lastNew
 
 	return info;
+}
+
+/**
+ * 爱奇艺订阅资料补全
+ * @param info
+ * @returns {Promise<*>}
+ */
+async function iqiyi(info){
+	return info
 }
 
 /**
@@ -251,6 +262,35 @@ async function bilibiliUpdate(info){
 
 		notification_url[id] = info.href;
 	}
+}
+
+async function iqiyiUpdate(info){
+	let html = await getHtml(info.href)
+	let lastNew = 0
+
+	let dom = new DOMParser().parseFromString(html,'text/html')
+
+	lastNew = $(dom).find(".update-tip").text().match(/(?<=更新至)\d+(?=集\/)/)
+
+	if(!lastNew){
+		lastNew = $(dom).find('div.side-content>div:first').find("ul.qy-play-list").children("li.play-list-item").length
+	}else{
+		lastNew = lastNew[0]
+	}
+
+	lastNew = lastNew.toString()
+
+	if(lastNew && lastNew!==info.lastNew){
+		//有更新
+		info.lastNew = lastNew
+
+		chrome.storage.sync.set({[info.detail]:info})
+
+		let id = alertNotify(info.desc,info.title+' 第'+lastNew+'(集/期)已更新',info.images,true,[{title:'立刻查看'},{title:'取消'}],10000)
+
+		notification_url[id] = info.href;
+	}
+
 }
 
 

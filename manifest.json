@@ -17,8 +17,8 @@
          "theme/chrome/js/jquery.js",
          "theme/chrome/js/content_script.js"
       ],
-      "matches": ["https://v.qq.com/*","https://www.bilibili.com/*"],
-      "run_at": "document_end"
+      "matches": ["https://v.qq.com/*","https://www.bilibili.com/*","https://www.iqiyi.com/*"],
+      "run_at": "document_idle"
    } ],
    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
    "description": "拿来追剧岂不快哉",

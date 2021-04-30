@@ -2,9 +2,12 @@ let href
 
 let host
 
+let iqiyi_json
+
 let relation_map = {
     "v.qq.com":vqq,
-    "www.bilibili.com":bilibili
+    "www.bilibili.com":bilibili,
+    "www.iqiyi.com":iqiyi
 };
 
 let info = {
@@ -69,6 +72,11 @@ function buildButton(detail){
     });
 }
 
+//防止重复点击
+function clickAble(bool = true){
+    $("#johns").attr("clickable",bool)
+}
+
 function vqq(){
     let regex = /x\/cover\/[\w\/]+\.html/
 
@@ -84,11 +92,6 @@ function vqq(){
     }
 }
 
-//防止重复点击
-function clickAble(bool = true){
-    $("#johns").attr("clickable",bool)
-}
-
 function bilibili(){
     let regex = /\/bangumi\/play\/\w+/
 
@@ -99,6 +102,30 @@ function bilibili(){
         $(document).on('click','#johns',function (){
             clickAble(false)
             followBiliVideo();
+        })
+    }
+}
+
+function iqiyi(){
+    let regex = /www\.iqiyi\.com\/[\w_]+\.html/
+
+    if(regex.test(href) && $(".content-paragraph").text()){
+        //添加元素标签 按钮
+        iqiyi_json =  (new Function("return " + $("div[is='i71-play-ab']").attr(':page-info')))()
+
+        // console.log(iqiyi_json)
+
+        if(iqiyi_json.albumUrl){
+            detail = ('https:'+iqiyi_json.albumUrl).replace(/\/\/\/\//,'//')
+        }else{
+            detail = iqiyi_json.pageUrl
+        }
+
+        buildButton(detail)
+
+        $(document).on('click','#johns',function (){
+            clickAble(false)
+            followIqiyi();
         })
     }
 }
@@ -141,13 +168,42 @@ function followBiliVideo(){
     sendBackgroud(info)
 }
 
+function followIqiyi(){
+//匹配通过，是iqiyi播放页面
+    info.href = href.replace(/\?.*$/,'')
+
+    info.title = iqiyi_json.albumName
+
+    if(iqiyi_json.albumUrl){
+        info.detail = ('https:'+iqiyi_json.albumUrl).replace(/\/\/\/\//,'//')
+    }else{
+        info.detail = iqiyi_json.pageUrl
+    }
+
+    info.desc = $(".content-paragraph").text();
+    info.images = 'https:'+($('.intro-img').attr('src')?$('.intro-img').attr('src'):iqiyi_json.imageUrl)
+    info.lastNew = $(".update-tip").text().match(/(?<=更新至)\d+(?=集\/)/)
+
+    info.type = iqiyi_json.categoryName
+
+    if(!info.lastNew){
+        info.lastNew =  $('div.side-content>div:first').find("ul.qy-play-list").children("li.play-list-item").length
+    }else{
+        info.lastNew = info.lastNew[0]
+    }
+
+    info.lastNew = info.lastNew.toString()
+
+    sendBackgroud(info)
+}
+
 function sendBackgroud(info){
     chrome.runtime.sendMessage({from:"content_js",action: "follow",data:info}, function(response) {});
 
     setTimeout(function (){
         buildButton(info.detail)
         clickAble(true)
-    },1000)
+    },2000)
 }
 
 getUrl();

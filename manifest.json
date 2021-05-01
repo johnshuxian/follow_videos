@@ -6,8 +6,7 @@
    },
    "browser_action": {
       "default_icon": {
-         "19": "ext_icons/icon_19_1.png",
-         "38": "ext_icons/icon_38_1.png"
+         "128": "ext_icons/icon_128_1.png"
       },
       "default_popup": "config.html",
       "default_title": "追剧助手"
@@ -23,9 +22,7 @@
    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
    "description": "拿来追剧岂不快哉(支持腾讯视频、爱奇艺、bilibili)",
    "icons": {
-      "128": "ext_icons/icon_128_1.png",
-      "16": "ext_icons/icon_16_1.png",
-      "48": "ext_icons/icon_48_1.png"
+      "128": "ext_icons/icon_128_1.png"
    },
    "manifest_version": 2,
    "name": "追剧助手",

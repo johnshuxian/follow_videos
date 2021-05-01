@@ -30,7 +30,7 @@
    "manifest_version": 2,
    "name": "追剧助手",
    "options_page": "config.html",
-   "permissions": [ "activeTab", "background", "tabs", "contextMenus", "unlimitedStorage", "storage", "notifications","alarms", "cookies", "*://*/*", "<all_urls>", "http://*/", "https://*/", "management" ],
+   "permissions": [ "activeTab", "background", "tabs", "contextMenus", "unlimitedStorage", "storage", "notifications","alarms", "*://*/*", "<all_urls>", "http://*/", "https://*/" ],
    "version": "1.0.2",
    "web_accessible_resources": [ "*" ]
 }

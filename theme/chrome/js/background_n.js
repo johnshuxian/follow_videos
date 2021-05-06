@@ -319,15 +319,20 @@ async function iqiyiUpdate(info){
  * @param buttons
  * @param clear_time
  */
-function alertNotify(messages,titles,image,consistent,buttons = [],clear_time=5000) {
+async function alertNotify(messages,titles,image,consistent,buttons = [],clear_time=5000) {
 	let id = Date.now().toString();
+
+	const response = await fetch(image);
+	const blob = await response.blob();
+
+	const url = URL.createObjectURL(blob);
 
 	let opt = {
 		type: "basic",
 		title: titles,
 		message: messages,
 		// iconUrl: "img/logo.png",
-		iconUrl: image,
+		iconUrl: url,
 		requireInteraction:consistent,
 		// priority: 1,
 		isClickable: false
@@ -362,6 +367,10 @@ function alertNotify(messages,titles,image,consistent,buttons = [],clear_time=50
 chrome.notifications.onButtonClicked.addListener((id,index)=>{
 	if(notification_url[id] && index=== 0){
 		chrome.tabs.create({url:notification_url[id]})
+	}
+
+	if(notification_url[id]){
+		delete notification_url[id]
 	}
 });
 
